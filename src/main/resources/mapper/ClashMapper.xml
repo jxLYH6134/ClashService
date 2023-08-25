@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.hiyorin.clashservice.mapper.ClashMapper">
+    <resultMap id="ClashUserMap" type="top.hiyorin.clashservice.model.User">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="base64" property="base64"/>
+        <result column="expires" property="expires"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <resultMap id="TemplateMap" type="top.hiyorin.clashservice.model.Template">
+        <id column="id" property="id"/>
+        <result column="subscribe_url" property="subscribeUrl"/>
+        <result column="rule" property="rule"/>
+    </resultMap>
+
+    <update id="updateUser">
+        update user_subscription
+        <set>
+            <if test="name != '' and name != null">
+                name=#{name},
+            </if>
+            <if test="base64 != '' and base64 != null">
+                base64=#{base64},
+            </if>
+            <if test="expires != '' and expires != null">
+                expires=#{expires},
+            </if>
+            <if test="type != '' and type != null">
+                type=#{type},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="selectUser" resultMap="ClashUserMap">
+        select * from user_subscription where base64=#{base64}
+    </select>
+
+    <select id="getTemplate" resultMap="TemplateMap">
+        select * from template
+    </select>
+</mapper>
