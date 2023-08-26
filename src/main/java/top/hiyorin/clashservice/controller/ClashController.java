@@ -19,8 +19,10 @@ public class ClashController {
     @GetMapping
     private ResponseEntity<String> getClash(
             @RequestParam("usr") String base64,
-            @RequestParam(value = "interval", required = false) Integer interval) {
+            @RequestParam(value = "interval", required = false) Integer interval) throws InterruptedException {
         User user = clashService.selectUser(base64);
+        Thread.sleep(300);
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         }
@@ -29,10 +31,14 @@ public class ClashController {
             interval = 24;
         }
 
-        Template template = clashService.getTemplate();
+        clashService.updateCache();
+        Thread.sleep(300);
 
-        String disposition = "attachment; filename=\"%E6%A1%9C%E3%81%AE%E5%A1%94\"; filename*=utf-8''%E6%A1%9C%E3%81%AE%E5%A1%94";
-        String userInfo = clashService.setUserInfo(template.getSubscribeUrl(), user.getExpires());
+        Template template = clashService.getTemplate();
+        String disposition = "attachment; filename=\"%E6%A1%9C%E3%81%AE%E5%A1%94\"; " +
+                "filename*=utf-8''%E6%A1%9C%E3%81%AE%E5%A1%94";
+        String userInfo = clashService.setUserInfo(template.getCache(), user.getExpires());
+        Thread.sleep(300);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", disposition);

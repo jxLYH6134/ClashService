@@ -11,4 +11,8 @@ public interface ClashMapper {
     User selectUser(String base64);
 
     Template getTemplate();
+
+    String getSubscribeUrl();
+
+    Integer updateCache(String cache);
 }

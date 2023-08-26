@@ -4,6 +4,7 @@ public class Template {
     private Integer id;
     private String subscribeUrl;
     private String rule;
+    private String cache;
 
     public Integer getId() {
         return id;
@@ -27,5 +28,13 @@ public class Template {
 
     public void setRule(String rule) {
         this.rule = rule;
+    }
+
+    public String getCache() {
+        return cache;
+    }
+
+    public void setCache(String cache) {
+        this.cache = cache;
     }
 }

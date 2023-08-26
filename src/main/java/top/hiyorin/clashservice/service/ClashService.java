@@ -1,10 +1,10 @@
 package top.hiyorin.clashservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import top.hiyorin.clashservice.mapper.ClashMapper;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
+@EnableScheduling
 public class ClashService {
     @Autowired
     ClashMapper clashMapper;
@@ -30,8 +31,7 @@ public class ClashService {
     }
 
     public Template getTemplate() {
-        Template template = clashMapper.getTemplate();
-        return template;
+        return clashMapper.getTemplate();
     }
 
     public Boolean checkSubscription(User user) {
@@ -40,21 +40,29 @@ public class ClashService {
         return currentDate.isBefore(expirationDate) && user.getType() > 0;
     }
 
-    public String setUserInfo(String url, String expires) {
+    public String setUserInfo(String cache, String expires) {
+        LocalDate date = LocalDate.parse(expires);
+        LocalDateTime dateTime = date.atStartOfDay();
+        long timestamp = dateTime.toEpochSecond(ZoneOffset.UTC) - 28800;
+        return cache + timestamp;
+    }
+
+    @Async
+    @Scheduled(fixedDelay = 600000)
+    public void updateCache() {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("User-Agent", "Clash");
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-        HttpHeaders responseHeaders = responseEntity.getHeaders();
-        String subInfo = responseHeaders.getFirst("subscription-userinfo");
-
-        LocalDate date = LocalDate.parse(expires);
-        LocalDateTime dateTime = date.atStartOfDay();
-        long timestamp = dateTime.toEpochSecond(ZoneOffset.UTC) - 28800;
-
-        int lastEqualIndex = subInfo.lastIndexOf("=");
-        String userInfo = subInfo.substring(0, lastEqualIndex + 1);
-        return userInfo + timestamp;
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                clashMapper.getSubscribeUrl(), HttpMethod.GET, requestEntity, String.class);
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            HttpHeaders responseHeaders = responseEntity.getHeaders();
+            String subInfo = responseHeaders.getFirst("subscription-userinfo");
+            assert subInfo != null;
+            int lastEqualIndex = subInfo.lastIndexOf("=");
+            String userInfo = subInfo.substring(0, lastEqualIndex + 1);
+            clashMapper.updateCache(userInfo);
+        }
     }
 }
