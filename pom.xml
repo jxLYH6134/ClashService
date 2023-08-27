@@ -10,7 +10,7 @@
     </parent>
     <groupId>top.hiyorin</groupId>
     <artifactId>ClashService</artifactId>
-    <version>1.2.3</version>
+    <version>1.3.1</version>
     <name>ClashService</name>
     <description>ClashService</description>
     <properties>
