@@ -11,6 +11,9 @@ import top.hiyorin.clashservice.model.Template;
 import top.hiyorin.clashservice.model.User;
 import top.hiyorin.clashservice.service.ClashService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @RestController
 public class ClashController {
     @Autowired
@@ -19,9 +22,10 @@ public class ClashController {
     @GetMapping
     private ResponseEntity<String> getClash(
             @RequestParam("usr") String base64,
-            @RequestParam(value = "interval", required = false) Integer interval) throws InterruptedException {
+            @RequestParam(value = "interval", required = false) Integer interval,
+            @RequestParam(value = "rename", required = false) String rename) throws InterruptedException {
         User user = clashService.selectUser(base64);
-        Thread.sleep(300);
+        Thread.sleep(200);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
@@ -31,14 +35,18 @@ public class ClashController {
             interval = 24;
         }
 
+        if (rename == null) {
+            rename = "桜の塔";
+        }
+        String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
+
         clashService.updateCache();
-        Thread.sleep(300);
+        Thread.sleep(200);
 
         Template template = clashService.getTemplate();
-        String disposition = "attachment; filename=\"%E6%A1%9C%E3%81%AE%E5%A1%94\"; " +
-                "filename*=utf-8''%E6%A1%9C%E3%81%AE%E5%A1%94";
+        String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
         String userInfo = clashService.setUserInfo(template.getCache(), user.getExpires());
-        Thread.sleep(300);
+        Thread.sleep(200);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", disposition);
