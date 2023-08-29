@@ -69,11 +69,18 @@ public class ClashController {
         if (!clashService.checkSubscription(user)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .headers(headers)
-                    .body("Forbidden Error!\n");
+                    .body("Expired Subscription!\n");
+        }
+
+        String profiles = template.getRule();
+
+        if (userAgent.startsWith("Shadowrocket") & user.getType() < 2) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(profiles.substring(0, profiles.indexOf("} #") + 1));
         }
 
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(headers)
-                .body(template.getRule());
+                .body("# " + userAgent + ',' + user.getName() + '\n' + profiles);
     }
 }
