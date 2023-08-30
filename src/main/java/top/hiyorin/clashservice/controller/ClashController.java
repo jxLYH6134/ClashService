@@ -26,11 +26,15 @@ public class ClashController {
 
     @GetMapping
     private ResponseEntity<String> getClash(
-            @RequestParam("usr") String base64,
+            @RequestParam(value = "usr", required = false) String base64,
             @RequestParam(value = "interval", required = false) Integer interval,
             @RequestParam(value = "rename", required = false) String rename,
 //            @RequestParam(value = "beta", required = false) Boolean beta,
             HttpServletRequest request) throws InterruptedException {
+        if (base64 == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
+        }
+
         String userAgent = request.getHeader("User-Agent");
         if (!userAgent.startsWith("ClashforWindows")) {
             if (!userAgent.startsWith("ClashForAndroid")) {
