@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+@SuppressWarnings("SpellCheckingInspection")
 @RestController
 public class ClashController {
     private static final Logger logger = LoggerFactory.getLogger(ClashController.class);
@@ -27,7 +28,6 @@ public class ClashController {
     @GetMapping
     private ResponseEntity<String> getClash(
             @RequestParam(value = "usr", required = false) String base64,
-            @RequestParam(value = "interval", required = false) Integer interval,
             @RequestParam(value = "rename", required = false) String rename,
 //            @RequestParam(value = "beta", required = false) Boolean beta,
             HttpServletRequest request) throws InterruptedException {
@@ -51,24 +51,20 @@ public class ClashController {
         }
         logger.info("\n[User " + user.getName() + " gets a sub by " + userAgent + ']');
         clashService.updateCache();
-        Thread.sleep(400);
+        Thread.sleep(800);
 
-        if (interval == null) {
-            interval = 24;
-        }
         if (rename == null) {
             rename = "桜の塔";
         }
         String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
+        String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
 
         Template template = clashService.getTemplate();
-        String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
         String userInfo = clashService.setUserInfo(template.getCache(), user.getExpires());
-        Thread.sleep(400);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", disposition);
-        headers.add("profile-update-interval", interval.toString());
+        headers.add("Profile-Update-Interval", "24");
         headers.add("Subscription-UserInfo", userInfo);
 
         if (!clashService.checkSubscription(user)) {
