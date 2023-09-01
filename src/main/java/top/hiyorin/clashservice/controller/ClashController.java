@@ -39,6 +39,7 @@ public class ClashController {
         if (!userAgent.startsWith("ClashforWindows")) {
             if (!userAgent.startsWith("ClashForAndroid")) {
                 if (!userAgent.startsWith("Shadowrocket")) {
+                    logger.info("\nBlocked form " + userAgent);
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
                 }
             }
@@ -48,7 +49,7 @@ public class ClashController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         }
-        logger.info("\n[User " + user.getName() + " gets a subscription with " + userAgent + ']');
+        logger.info("\n[User " + user.getName() + " gets a sub by " + userAgent + ']');
         clashService.updateCache();
         Thread.sleep(400);
 
