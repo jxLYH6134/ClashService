@@ -21,11 +21,6 @@ public class ClashService {
     @Autowired
     ClashMapper clashMapper;
 
-    public Boolean updateUser(Integer id, User user) {
-        user.setId(id);
-        return clashMapper.updateUser(user) > 0;
-    }
-
     public User selectUser(String base64) {
         return clashMapper.selectUser(base64);
     }

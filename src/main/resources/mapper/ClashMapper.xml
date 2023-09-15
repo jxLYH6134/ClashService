@@ -11,45 +11,19 @@
         <result column="type" property="type"/>
     </resultMap>
 
-    <resultMap id="TemplateMap" type="top.hiyorin.clashservice.model.Template">
-        <id column="id" property="id"/>
-        <result column="subscribe_url" property="subscribeUrl"/>
-        <result column="rule" property="rule"/>
-        <result column="cache" property="cache"/>
-    </resultMap>
-
     <select id="selectUser" resultMap="ClashUserMap">
         select * from user_subscription where base64=#{base64}
     </select>
 
-    <update id="updateUser">
-        update user_subscription
-        <set>
-            <if test="name != '' and name != null">
-                name=#{name},
-            </if>
-            <if test="base64 != '' and base64 != null">
-                base64=#{base64},
-            </if>
-            <if test="expires != '' and expires != null">
-                expires=#{expires},
-            </if>
-            <if test="type != '' and type != null">
-                type=#{type},
-            </if>
-        </set>
-        where id=#{id}
-    </update>
-
-    <select id="getTemplate" resultMap="TemplateMap">
-        select * from template
+    <select id="getCache" resultType="java.lang.String">
+        select cache from redis
     </select>
 
     <select id="getSubscribeUrl" resultType="java.lang.String">
-        select subscribe_url from template
+        select subscribe_url from redis
     </select>
 
     <update id="updateCache">
-        update template set cache=#{cache}
+        update redis set cache=#{cache}
     </update>
 </mapper>
