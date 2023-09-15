@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import top.hiyorin.clashservice.mapper.ClashMapper;
-import top.hiyorin.clashservice.model.Template;
 import top.hiyorin.clashservice.model.User;
 
 import java.time.LocalDate;
@@ -23,10 +22,6 @@ public class ClashService {
 
     public User selectUser(String base64) {
         return clashMapper.selectUser(base64);
-    }
-
-    public Template getTemplate() {
-        return clashMapper.getTemplate();
     }
 
     public Boolean checkSubscription(User user) {

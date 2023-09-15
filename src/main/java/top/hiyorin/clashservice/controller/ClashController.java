@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.hiyorin.clashservice.model.Template;
 import top.hiyorin.clashservice.model.User;
 import top.hiyorin.clashservice.service.ClashService;
 
@@ -59,8 +58,7 @@ public class ClashController {
         String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
         String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
 
-        Template template = clashService.getTemplate();
-        String userInfo = clashService.setUserInfo(template.getCache(), user.getExpires());
+        String userInfo = clashService.setUserInfo(user.getExpires());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", disposition);
@@ -72,8 +70,6 @@ public class ClashController {
                     .headers(headers)
                     .body("Expired Subscription!\n");
         }
-
-        String profiles = template.getRule();
 
         if (userAgent.startsWith("Shadowrocket") & user.getType() < 2) {
             return ResponseEntity.status(HttpStatus.OK)
