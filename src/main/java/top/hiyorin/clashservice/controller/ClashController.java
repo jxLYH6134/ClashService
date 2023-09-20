@@ -28,7 +28,7 @@ public class ClashController {
     private ResponseEntity<String> getClash(
             @RequestParam(value = "usr", required = false) String base64,
             @RequestParam(value = "rename", required = false) String rename,
-//            @RequestParam(value = "beta", required = false) Boolean beta,
+            @RequestParam(value = "beta", required = false) Boolean beta,
             HttpServletRequest request) throws InterruptedException {
         if (base64 == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
@@ -39,7 +39,7 @@ public class ClashController {
             if (!userAgent.startsWith("ClashForAndroid")) {
                 if (!userAgent.startsWith("Shadowrocket")) {
                     logger.info("\nBlocked form " + userAgent);
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
                 }
             }
         }
@@ -55,7 +55,13 @@ public class ClashController {
         if (rename == null) {
             rename = "桜の塔";
         }
+        if (beta == null) {
+            beta = false;
+        }
         String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
+        if (beta) {
+            fileName = fileName + "%20beta";
+        }
         String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
 
         String userInfo = clashService.setUserInfo(user.getExpires());
@@ -71,7 +77,13 @@ public class ClashController {
                     .body("Expired Subscription!\n");
         }
 
-        if (userAgent.startsWith("Shadowrocket") & user.getType() < 2) {
+        if (beta && user.getType() < 3) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
+        }
+
+        String profiles = clashService.getRules(beta);
+
+        if (userAgent.startsWith("Shadowrocket") && user.getType() < 2) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(profiles.substring(0, profiles.indexOf("} #") + 1));
         }

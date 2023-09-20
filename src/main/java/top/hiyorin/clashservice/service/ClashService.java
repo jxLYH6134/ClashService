@@ -10,9 +10,11 @@ import org.springframework.web.client.RestTemplate;
 import top.hiyorin.clashservice.mapper.ClashMapper;
 import top.hiyorin.clashservice.model.User;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 @Service
 @EnableScheduling
@@ -30,11 +32,28 @@ public class ClashService {
         return currentDate.isBefore(expirationDate) && user.getType() > 0;
     }
 
-    public String setUserInfo(String cache, String expires) {
+    public String setUserInfo(String expires) {
         LocalDate date = LocalDate.parse(expires);
         LocalDateTime dateTime = date.atStartOfDay();
         long timestamp = dateTime.toEpochSecond(ZoneOffset.UTC) - 28800;
-        return cache + timestamp;
+        return clashMapper.getCache() + timestamp;
+    }
+
+    public String getRules(Boolean beta) {
+        String serverUrl = "http://localhost/private/release.yml";
+        if (beta) {
+            serverUrl = "http://localhost/private/beta.yml";
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                serverUrl,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                byte[].class
+        );
+        return new String(response.getBody(), StandardCharsets.UTF_8);
     }
 
     @Async
