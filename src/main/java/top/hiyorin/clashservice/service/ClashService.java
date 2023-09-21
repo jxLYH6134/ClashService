@@ -28,12 +28,12 @@ public class ClashService {
 
     public Boolean checkSubscription(User user) {
         LocalDate currentDate = LocalDate.now();
-        LocalDate expirationDate = LocalDate.parse(user.getExpires()).plusDays(1);
+        LocalDate expirationDate = LocalDate.parse(user.getExpires());
         return currentDate.isBefore(expirationDate) && user.getType() > 0;
     }
 
     public String setUserInfo(String expires) {
-        LocalDate date = LocalDate.parse(expires);
+        LocalDate date = LocalDate.parse(expires).plusDays(-1);
         LocalDateTime dateTime = date.atStartOfDay();
         long timestamp = dateTime.toEpochSecond(ZoneOffset.UTC) - 28800;
         return clashMapper.getCache() + timestamp;
