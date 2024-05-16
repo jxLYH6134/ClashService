@@ -9,6 +9,7 @@
         <result column="base64" property="base64"/>
         <result column="expires" property="expires"/>
         <result column="type" property="type"/>
+        <result column="group" property="group"/>
     </resultMap>
 
     <resultMap id="ClashNodeMap" type="top.hiyorin.clashservice.model.Node">

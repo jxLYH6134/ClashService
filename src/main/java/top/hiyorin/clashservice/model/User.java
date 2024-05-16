@@ -6,6 +6,7 @@ public class User {
     private String base64;
     private String expires;
     private Integer type;
+    private Integer group;
 
     public Integer getId() {
         return id;
@@ -45,5 +46,13 @@ public class User {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getGroup() {
+        return group;
+    }
+
+    public void setGroup(Integer group) {
+        this.group = group;
     }
 }
