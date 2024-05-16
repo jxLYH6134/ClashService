@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @EnableScheduling
@@ -53,7 +54,7 @@ public class ClashService {
                 new HttpEntity<>(headers),
                 byte[].class
         );
-        return new String(response.getBody(), StandardCharsets.UTF_8);
+        return new String(Objects.requireNonNull(response.getBody()), StandardCharsets.UTF_8);
     }
 
     @Async
