@@ -11,6 +11,12 @@
         <result column="type" property="type"/>
     </resultMap>
 
+    <resultMap id="ClashNodeMap" type="top.hiyorin.clashservice.model.Node">
+        <id column="id" property="id"/>
+        <result column="cache" property="cache"/>
+        <result column="uuid" property="uuid"/>
+    </resultMap>
+
     <select id="selectUser" resultMap="ClashUserMap">
         select * from user_subscription where base64=#{base64}
     </select>
