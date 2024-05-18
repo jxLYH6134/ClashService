@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.hiyorin.clashservice.model.Node;
 import top.hiyorin.clashservice.model.User;
 import top.hiyorin.clashservice.service.ClashService;
 
@@ -49,8 +50,8 @@ public class ClashController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         }
         logger.info("\n[User " + user.getName() + " gets a sub by " + userAgent + ']');
-        clashService.updateCache();
-        Thread.sleep(800);
+        Node node = clashService.selectNode(user.getGroup());
+        clashService.updateCache(user.getGroup());
 
         if (rename == null) {
             rename = "桜の塔";
@@ -64,7 +65,7 @@ public class ClashController {
         }
         String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
 
-        String userInfo = clashService.setUserInfo(user.getExpires());
+        String userInfo = clashService.setUserInfo(user.getExpires(), node.getCache());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", disposition);
@@ -81,7 +82,7 @@ public class ClashController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
 
-        String profiles = clashService.getRules(beta);
+        String profiles = clashService.getRules(beta, node.getUuid());
 
         if (userAgent.startsWith("Shadowrocket") && user.getType() < 2) {
             return ResponseEntity.status(HttpStatus.OK)
