@@ -85,12 +85,23 @@ public class ClashService {
     @Async
     public void updateCache(Integer id) {
         RestTemplate restTemplate = new RestTemplate();
+
+        String proxyHost = System.getenv("https_proxy_host");
+        String proxyPort = System.getenv("https_proxy_port");
+
+        if (proxyHost != null && proxyPort != null) {
+            System.setProperty("https.proxyHost", proxyHost);
+            System.setProperty("https.proxyPort", proxyPort);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("User-Agent", "Clash");
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 clashMapper.getSubscribeUrl(id), HttpMethod.GET, requestEntity, String.class);
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
             HttpHeaders responseHeaders = responseEntity.getHeaders();
             String subInfo = responseHeaders.getFirst("subscription-userinfo");
             if (subInfo != null) {
