@@ -78,11 +78,16 @@ public class ClashController {
                     .body("Expired Subscription!\n");
         }
 
-        if (beta && user.getType() < 3) {
+        if (beta && user.getType() < 4) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
 
         String profiles = clashService.getRules(beta, node.getUuid());
+
+        if (user.getType() > 2) {
+            Node nodeBackup = clashService.selectNode(1);
+            profiles = profiles.replace("pswd", nodeBackup.getUuid());
+        }
 
         if (userAgent.startsWith("Shadowrocket") && user.getType() < 2) {
             return ResponseEntity.status(HttpStatus.OK)
