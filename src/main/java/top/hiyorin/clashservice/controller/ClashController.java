@@ -30,7 +30,7 @@ public class ClashController {
             @RequestParam(value = "usr", required = false) String base64,
             @RequestParam(value = "rename", required = false) String rename,
             @RequestParam(value = "beta", required = false) Boolean beta,
-            HttpServletRequest request) throws InterruptedException {
+            HttpServletRequest request) {
         if (base64 == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
         }
