@@ -40,22 +40,22 @@ public class ClashController {
         }
 
         String userAgent = request.getHeader("User-Agent");
-        if (!beta) {
-            if (!userAgent.startsWith("ClashforWindows")) {
-                if (!userAgent.startsWith("ClashForAndroid")) {
-                    if (!userAgent.startsWith("Shadowrocket")) {
-                        logger.info("\nBlocked form " + userAgent);
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
-                    }
-                }
-            }
-        }
 
         User user = clashService.selectUser(base64);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
         }
-        logger.info("\n[User " + user.getName() + " gets a sub by " + userAgent + ']');
+        if (!beta) {
+            if (!userAgent.startsWith("ClashforWindows")) {
+                if (!userAgent.startsWith("ClashForAndroid")) {
+                    if (!userAgent.startsWith("Shadowrocket")) {
+                        logger.info("\nBlocked " + user.getName() + " form " + userAgent);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+                    }
+                }
+            }
+        }
+        logger.info("\n[User " + user.getName() + " have got sub from " + userAgent + ']');
         Node node = clashService.selectNode(user.getGroup());
         clashService.updateCache(user.getGroup());
 
@@ -63,9 +63,9 @@ public class ClashController {
             rename = "桜の塔";
         }
         String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
-        if (beta) {
-            fileName = fileName + "%20beta";
-        }
+//        if (beta) {
+//            fileName = fileName + "%20beta";
+//        }
         String disposition = "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName;
 
         String userInfo = clashService.setUserInfo(user.getExpires(), node.getCache());
