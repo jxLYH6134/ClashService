@@ -42,6 +42,18 @@ public class ClashService {
         return currentDate.isBefore(expirationDate) && user.getType() > 0;
     }
 
+    public Boolean isBeta(User user) {
+        return ((user.getType() >> 2) & 1) != 0;
+    }
+
+    public Boolean isExtend(User user) {
+        return ((user.getType() >> 1) & 1) != 0;
+    }
+
+    public Boolean isCut(User user) {
+        return (user.getType() & 1) != 0;
+    }
+
     public String setUserInfo(String expires, String cache) {
         LocalDate date = LocalDate.parse(expires);
         LocalDateTime dateTime = date.atStartOfDay();
@@ -74,7 +86,7 @@ public class ClashService {
         return totalRecords != null ? totalRecords : 0;
     }
 
-    @Scheduled(fixedDelay = 600000)
+//    @Scheduled(fixedDelay = 600000)
     public void updateCacheScheduled() {
         int totalRecords = getTotalRecordsFromDatabase();
         for (int id = 1; id <= totalRecords; id++) {

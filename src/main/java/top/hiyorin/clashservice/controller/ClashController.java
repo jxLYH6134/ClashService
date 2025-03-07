@@ -78,18 +78,18 @@ public class ClashController {
                     .body("Expired Subscription!\n");
         }
 
-        if (beta && user.getType() < 4) {
+        if (beta && !clashService.isBeta(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("");
         }
 
         String profiles = clashService.getRules(beta, node.getUuid());
 
-        if (user.getType() > 2) {
+        if (clashService.isExtend(user)) {
             Node nodeBackup = clashService.selectNode(1);
             profiles = profiles.replace("pswd", nodeBackup.getUuid());
         }
 
-        if (userAgent.startsWith("Shadowrocket") && user.getType() < 2) {
+        if (userAgent.startsWith("Shadowrocket") && clashService.isCut(user)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(profiles.substring(0, profiles.indexOf("} #") + 1));
         }
