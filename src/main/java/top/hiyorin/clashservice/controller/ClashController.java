@@ -35,12 +35,18 @@ public class ClashController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
         }
 
+        if (beta == null) {
+            beta = false;
+        }
+
         String userAgent = request.getHeader("User-Agent");
-        if (!userAgent.startsWith("ClashforWindows")) {
-            if (!userAgent.startsWith("ClashForAndroid")) {
-                if (!userAgent.startsWith("Shadowrocket")) {
-                    logger.info("\nBlocked form " + userAgent);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+        if (!beta) {
+            if (!userAgent.startsWith("ClashforWindows")) {
+                if (!userAgent.startsWith("ClashForAndroid")) {
+                    if (!userAgent.startsWith("Shadowrocket")) {
+                        logger.info("\nBlocked form " + userAgent);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+                    }
                 }
             }
         }
@@ -55,9 +61,6 @@ public class ClashController {
 
         if (rename == null) {
             rename = "桜の塔";
-        }
-        if (beta == null) {
-            beta = false;
         }
         String fileName = URLEncoder.encode(rename, StandardCharsets.UTF_8);
         if (beta) {
